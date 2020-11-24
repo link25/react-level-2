@@ -1,6 +1,7 @@
 import React from "react";
 import "./Search.css";
 import axios from "axios";
+import Loader from "../../loader.gif";
 
 class Search extends React.Component {
   // Initilise some information in state
@@ -15,11 +16,11 @@ class Search extends React.Component {
     };
     this.cancel = "";
   }
-  getPageCount = ( total, denominator ) => {
-    const divisible	= 0 === total % denominator;
+  getPageCount = (total, denominator) => {
+    const divisible = 0 === total % denominator;
     const valueToBeAdded = divisible ? 0 : 1;
-    return Math.floor( total/denominator ) + valueToBeAdded;
-};
+    return Math.floor(total / denominator) + valueToBeAdded;
+  };
   // fetching for users
   fetchSearchResults = (query) => {
     const searchUrl = ` https://api.github.com/search/users?q=${query}`;
@@ -68,7 +69,7 @@ class Search extends React.Component {
       });
     }
   };
-// Displaying object from the API query
+  // Displaying object from the API query
   renderSearchResults = () => {
     const { results } = this.state;
 
@@ -99,7 +100,7 @@ class Search extends React.Component {
   };
 
   render() {
-    const { query } = this.state;
+    const { query, loading, message } = this.state;
     console.warn(this.state);
     return (
       <div className="container">
@@ -117,8 +118,18 @@ class Search extends React.Component {
           />
           <i className="fa fa-search search-icon" aria-hidden="true" />
         </label>
+        {/*	Error Message*/}
+        {message && <p className="message">{ message }</p>}
+
+        {/*	Loader*/}
+        <img
+          src={Loader}
+          className={`search-loading ${loading ? "show" : "hide"}`}
+          alt="loader"
+        />
+
         {/*	Result*/}
-			{ this.renderSearchResults() }
+        {this.renderSearchResults()}
       </div>
     );
   }
