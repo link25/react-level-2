@@ -15,6 +15,11 @@ class Search extends React.Component {
     };
     this.cancel = "";
   }
+  getPageCount = ( total, denominator ) => {
+    const divisible	= 0 === total % denominator;
+    const valueToBeAdded = divisible ? 0 : 1;
+    return Math.floor( total/denominator ) + valueToBeAdded;
+};
   // fetching for users
   fetchSearchResults = (query) => {
     const searchUrl = ` https://api.github.com/search/users?q=${query}`;
@@ -30,12 +35,15 @@ class Search extends React.Component {
         cancelToken: this.cancel.token,
       })
       .then((res) => {
+        const total = res.data.total;
+
         const resultNotFoundMsg = !res.data.items.length
           ? "There are no more search results. Please try a new search"
           : "";
         this.setState({
           results: res.data.items,
           message: resultNotFoundMsg,
+          totalResults: total,
           loading: false,
         });
       })
@@ -60,12 +68,35 @@ class Search extends React.Component {
       });
     }
   };
+// Displaying object from the API query
+  renderSearchResults = () => {
+    const { results } = this.state;
 
-  /**
-   * Fetch results according to the prev or next page requests.
-   *
-   * @param {String} type 'prev' or 'next'
-   */
+    if (Object.keys(results).length && results.length) {
+      return (
+        <div className="results-container">
+          {results.map((result) => {
+            return (
+              <a
+                key={result.id}
+                href={result.avatar_url}
+                className="result-item"
+              >
+                <h6 className="image-username">{result.login}</h6>
+                <div className="image-wrapper">
+                  <img
+                    className="image"
+                    src={result.avatar_url}
+                    alt={`${result.login} image`}
+                  />
+                </div>
+              </a>
+            );
+          })}
+        </div>
+      );
+    }
+  };
 
   render() {
     const { query } = this.state;
@@ -86,6 +117,8 @@ class Search extends React.Component {
           />
           <i className="fa fa-search search-icon" aria-hidden="true" />
         </label>
+        {/*	Result*/}
+			{ this.renderSearchResults() }
       </div>
     );
   }
