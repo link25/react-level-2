@@ -5,7 +5,6 @@ class App extends React.Component {
 		return (
 			<div>
         <Search/>
-        this is search component
 			</div>
 		);
 	}
